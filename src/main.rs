@@ -1,6 +1,9 @@
 //! This example shows how to send messages between the two cores in the RP235x chip.
 //!
 //! The LED on the RP Pico W board is connected differently. See wifi_blinky.rs.
+//! The starting point was the Embassy example, but a lot more things have
+//! been added in.
+
 
 #![no_std]
 #![no_main]
@@ -12,6 +15,8 @@ use embassy_rp::gpio::{Level, Output};
 use embassy_rp::multicore::{Stack, spawn_core1};
 
 // Code to enable I2C communication.
+// Idea on I2C is to enable asynchronous: the interrupt handler
+// receives the results.
 use embassy_rp::bind_interrupts;
 use embassy_rp::i2c::{Async, Config, I2c, InterruptHandler};
 use embassy_rp::peripherals::{I2C1};
@@ -23,11 +28,20 @@ use embassy_time::Duration;
 use embassy_time::Ticker;
 use embassy_time::Timer;
 use static_cell::StaticCell;
+
+// Enables both defmt macros (INFO! etc) and causes
+// halt on panic.
 use {defmt_rtt as _, panic_probe as _};
 
+// Stack for the second core, and the two executors one for
+// each core.
 static mut CORE1_STACK: Stack<4096> = Stack::new();
 static EXECUTOR0: StaticCell<Executor> = StaticCell::new();
 static EXECUTOR1: StaticCell<Executor> = StaticCell::new();
+
+// Example of a channel, which can hold just 1 element.  Specified
+// as what type of mutex to use, what type of data it broadcasts, and
+// the number of entries.
 static CHANNEL: Channel<CriticalSectionRawMutex, LedState, 1> = Channel::new();
 
 enum LedState {
@@ -35,6 +49,7 @@ enum LedState {
     Off,
 }
 
+// This is what ensures the I2C interrupt handler is working for I2C1
 bind_interrupts!(struct Irqs {
     I2C1_IRQ => InterruptHandler<I2C1>;
 });
@@ -44,8 +59,10 @@ fn main() -> ! {
     let p = embassy_rp::init(Default::default());
     let led = Output::new(p.PIN_25, Level::Low);
 
+    // Setting up I2C1.  Need to actually verify that it is working however.
     let i2c1 = I2c::new_async(p.I2C1, p.PIN_3, p.PIN_2, Irqs, Config::default());
     
+    // Second core: Launch a r
     spawn_core1(
         p.CORE1,
         unsafe { &mut *core::ptr::addr_of_mut!(CORE1_STACK) },
