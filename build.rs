@@ -32,4 +32,7 @@ fn main() {
     println!("cargo:rustc-link-arg-bins=--nmagic");
     println!("cargo:rustc-link-arg-bins=-Tlink.x");
     println!("cargo:rustc-link-arg-bins=-Tdefmt.x");
+
+    // Enable the embedded-test setup...
+    println!("cargo::rustc-link-arg-tests=-Tembedded-test.x");
 }

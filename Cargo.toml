@@ -17,6 +17,9 @@ fixed = "1.29.0"
 fixed-macro = "1.2"
 static_cell = "2.1"
 
+[dev-dependencies]
+embedded-test = { version = "0.6.0", features = ["embassy"] }
+
 # Taken from the Embassy build information
 [profile.release]
 debug = 2
@@ -24,3 +27,12 @@ debug = 2
 [profile.dev]
 lto = true
 opt-level = "z"
+
+[[bin]]
+name = "Rust-Sandbox"
+test = false  # To make plain `cargo test` work: Disable tests for the bin, because we are only using the intergration tests
+bench = false # To make `cargo check --all-targets` work.
+
+[[test]]
+name = "example_test"
+harness = false

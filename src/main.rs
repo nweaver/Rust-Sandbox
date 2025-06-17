@@ -62,7 +62,7 @@ fn main() -> ! {
     // Setting up I2C1.  Need to actually verify that it is working however.
     let i2c1 = I2c::new_async(p.I2C1, p.PIN_3, p.PIN_2, Irqs, Config::default());
     
-    // Second core: Launch a r
+    // Second core: Launch a runner onto the second corde
     spawn_core1(
         p.CORE1,
         unsafe { &mut *core::ptr::addr_of_mut!(CORE1_STACK) },
@@ -72,6 +72,7 @@ fn main() -> ! {
         },
     );
 
+    // And the runner on the first core.
     let executor0 = EXECUTOR0.init(Executor::new());
     executor0.run(|spawner| unwrap!(spawner.spawn(core0_task(i2c1))));
 }
@@ -118,3 +119,4 @@ async fn core1_task(mut led: Output<'static>) {
         }
     }
 }
+
