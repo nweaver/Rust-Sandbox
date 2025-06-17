@@ -16,6 +16,7 @@ mod tests {
     use embassy_rp::Peripherals;
     use core::sync::atomic::AtomicUsize;
     use core::sync::atomic::Ordering;
+    use defmt::warn;
     // use defmt::panic as defpanic;
     // use panic_probe as _;
 
@@ -37,7 +38,7 @@ mod tests {
     // Tests can take the state returned by the init function (optional)
     #[test]
     async fn takes_state(_state: Peripherals) {
-        // warn!("This is a warning log\n");
+        warn!("This is a warning log\n");
         assert!(true)
     }
 
