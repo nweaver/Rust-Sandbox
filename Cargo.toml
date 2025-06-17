@@ -16,9 +16,8 @@ defmt = "1.0.1"
 fixed = "1.29.0"
 fixed-macro = "1.2"
 static_cell = "2.1"
-
-[dev-dependencies]
 embedded-test = { version = "0.6.0", features = ["embassy"] }
+
 
 # Taken from the Embassy build information
 [profile.release]

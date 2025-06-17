@@ -28,11 +28,14 @@ fn main() {
     // here, we ensure the build script is only re-run when
     // `memory.x` is changed.
     println!("cargo:rerun-if-changed=memory.x");
-
     println!("cargo:rustc-link-arg-bins=--nmagic");
     println!("cargo:rustc-link-arg-bins=-Tlink.x");
     println!("cargo:rustc-link-arg-bins=-Tdefmt.x");
 
     // Enable the embedded-test setup...
-    println!("cargo::rustc-link-arg-tests=-Tembedded-test.x");
+    println!("cargo:rustc-link-arg-tests=--nmagic");
+    println!("cargo:rustc-link-arg-tests=-Tlink.x");
+    println!("cargo:rustc-link-arg-tests=-Tdefmt.x");
+    println!("cargo:rustc-link-arg-tests=-Tembedded-test.x");
+
 }
